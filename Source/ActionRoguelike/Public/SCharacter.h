@@ -18,6 +18,9 @@ public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -25,10 +28,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	void MoveForward(float Value);
+	void MoveRight(float Value);
 
 private:
 	UPROPERTY(VisibleAnywhere)
