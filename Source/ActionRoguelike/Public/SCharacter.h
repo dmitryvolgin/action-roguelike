@@ -30,7 +30,10 @@ public:
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void PrimaryAttack();
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
 private:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
