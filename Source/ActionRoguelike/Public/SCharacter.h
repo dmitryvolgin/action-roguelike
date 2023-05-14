@@ -34,6 +34,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> ProjectileClass;
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
