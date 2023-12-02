@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SExplosiveBarrel.h"
-
 #include "PhysicsEngine/RadialForceComponent.h"
 
 // Sets default values
@@ -16,17 +15,16 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	RootComponent = StaticMeshComponent;
 
 	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>("RadialForceComponent");
+	RadialForceComponent->SetupAttachment(RootComponent);
 	RadialForceComponent->Radius = 700;
 	RadialForceComponent->ImpulseStrength = 2000;
 	RadialForceComponent->bImpulseVelChange = true;
-	RadialForceComponent->SetupAttachment(RootComponent);
 }
 
 // Called every frame
 void ASExplosiveBarrel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called when the game starts or when spawned
@@ -42,5 +40,3 @@ void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 {
 	RadialForceComponent->FireImpulse();
 }
-
-

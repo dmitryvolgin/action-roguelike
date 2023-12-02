@@ -32,7 +32,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	URadialForceComponent* RadialForceComponent;
-
-private:
-
 };
