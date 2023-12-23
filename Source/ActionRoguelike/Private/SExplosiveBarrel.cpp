@@ -19,6 +19,7 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	RadialForceComponent->Radius = 700;
 	RadialForceComponent->ImpulseStrength = 2000;
 	RadialForceComponent->bImpulseVelChange = true;
+	RadialForceComponent->AddCollisionChannelToAffect(ECC_WorldDynamic);
 }
 
 // Called every frame
@@ -31,6 +32,11 @@ void ASExplosiveBarrel::Tick(float DeltaTime)
 void ASExplosiveBarrel::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ASExplosiveBarrel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 
 	StaticMeshComponent->OnComponentHit.AddDynamic(this, &ASExplosiveBarrel::OnHit);
 }
@@ -39,4 +45,11 @@ void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	RadialForceComponent->FireImpulse();
+
+	UE_LOG(LogTemp, Log, TEXT("[%S] OnHit in Explosive Barrel"), __FUNCTION__)
+
+	UE_LOG(LogTemp, Warning, TEXT("[%S] OtherActor: %s, at game time: %f"), __FUNCTION__, *GetNameSafe(OtherActor), GetWorld()->GetTimeSeconds())
+
+	const FString PrintString = FString::Printf(TEXT("[%S] Hit at Location: %s"), __FUNCTION__, *Hit.ImpactPoint.ToString());
+	DrawDebugString(GetWorld(), Hit.ImpactPoint, PrintString, nullptr, FColor::Green, 2.0f, true);
 }
