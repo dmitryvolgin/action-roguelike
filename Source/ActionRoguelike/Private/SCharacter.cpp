@@ -82,6 +82,11 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::OnPrimaryAttackReady()
 {
+	if (!ensure(ProjectileClass))
+	{
+		return;
+	}
+	
 	const FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	
 	FVector TraceStartLocation = CameraComp->GetComponentLocation();
