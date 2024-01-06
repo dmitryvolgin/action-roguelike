@@ -26,13 +26,10 @@ void ASItemChest::Interact_Implementation(APawn* PawnInstigator)
 void ASItemChest::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ASItemChest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-

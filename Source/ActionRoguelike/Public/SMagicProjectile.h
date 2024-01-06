@@ -3,35 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SProjectile.h"
 #include "GameFramework/Actor.h"
 #include "SMagicProjectile.generated.h"
 
-class USphereComponent;
-class UProjectileMovementComponent;
-
 UCLASS()
-class ACTIONROGUELIKE_API ASMagicProjectile : public AActor
+class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectile
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	ASMagicProjectile();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USphereComponent* SphereComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* EffectComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* MovementComponent;
-	
 };

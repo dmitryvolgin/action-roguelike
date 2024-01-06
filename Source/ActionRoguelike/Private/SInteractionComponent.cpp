@@ -69,4 +69,3 @@ void USInteractionComponent::PrimaryInteract()
 	
 	DrawDebugLine(GetWorld(), EyeLocation, End, DebugColor, false, 5.0f, 0, 2.0f);
 }
-

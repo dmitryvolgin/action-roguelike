@@ -40,6 +40,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnimation;
+
 	FTimerHandle PrimaryAttackTimerHandle;
 
 private:
