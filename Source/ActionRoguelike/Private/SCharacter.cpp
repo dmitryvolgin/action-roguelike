@@ -83,7 +83,23 @@ void ASCharacter::PrimaryAttack()
 void ASCharacter::OnPrimaryAttackReady()
 {
 	const FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	const FTransform SpawnTransform = FTransform(GetControlRotation(), HandLocation);
+	
+	FVector TraceStartLocation = CameraComp->GetComponentLocation();
+	FVector TraceEndLocation = TraceStartLocation + CameraComp->GetForwardVector() * 10000;
+
+	FCollisionObjectQueryParams QueryParams;
+	QueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+
+	FHitResult HitResult;
+
+	bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, TraceStartLocation, TraceEndLocation, QueryParams);
+	FVector TargetLocation = bHit ? HitResult.Location : TraceEndLocation;
+
+	FRotator ProjectileRotation = (TargetLocation - HandLocation).Rotation();
+	
+	const FTransform SpawnTransform = FTransform(ProjectileRotation, HandLocation);
 
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
