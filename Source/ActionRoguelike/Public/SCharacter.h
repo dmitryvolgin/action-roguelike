@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class ASProjectile;
 class USAttributeComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -32,10 +33,15 @@ public:
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void PrimaryInteract();
 	void PrimaryAttack();
 	void OnPrimaryAttackReady();
-	void PrimaryInteract();
-
+	void DashAttack();
+	void OnDashAttackReady();
+	void BlackHoleAttack();
+	void OnBlackHoleAttackReady();
+	void SpawnProjectile(TSubclassOf<AActor> ProjectileType);
+	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
@@ -49,10 +55,16 @@ protected:
 	USAttributeComponent* AttributeComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<AActor> MagicProjectileClass;
 
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> DashProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> BlackHoleProjectileClass;
+	
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnimation;
 
-	FTimerHandle PrimaryAttackTimerHandle;
+	FTimerHandle AttackTimerHandle;
 };

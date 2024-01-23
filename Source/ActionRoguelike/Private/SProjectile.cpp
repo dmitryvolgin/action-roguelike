@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SProjectile.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
@@ -14,6 +14,7 @@ ASProjectile::ASProjectile()
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
 	SphereComponent->SetCollisionProfileName("Projectile");
+	SphereComponent->OnComponentHit.AddDynamic(this, &ASProjectile::OnActorHit);
 	RootComponent = SphereComponent;
 
 	EffectComponent = CreateDefaultSubobject<UParticleSystemComponent>("EffectComponent");
@@ -26,15 +27,25 @@ ASProjectile::ASProjectile()
 }
 
 // Called when the game starts or when spawned
-void ASProjectile::BeginPlay()
-{
-	Super::BeginPlay();
 
-	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
+void ASProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	//SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
+
 }
 
-// Called every frame
-void ASProjectile::Tick(float DeltaTime)
+void ASProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::Tick(DeltaTime);
+	Explode();
+}
+
+void ASProjectile::Explode_Implementation()
+{
+	if (ensure(IsValid(this)))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticleEffect, GetActorLocation(), GetActorRotation());
+		Destroy();
+	}
 }

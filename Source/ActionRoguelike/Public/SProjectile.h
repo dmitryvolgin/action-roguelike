@@ -9,7 +9,7 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API ASProjectile : public AActor
 {
 	GENERATED_BODY()
@@ -18,19 +18,25 @@ public:
 	// Sets default values for this actor's properties
 	ASProjectile();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* SphereComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* EffectComponent;
+	UProjectileMovementComponent* MovementComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* MovementComponent;
+	UParticleSystemComponent* EffectComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	UParticleSystem* ImpactParticleEffect;
+
+	UFUNCTION()
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Explode();
 };

@@ -16,22 +16,15 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void PostInitializeComponents() override;
-	void OnTravelTimerEnd();
-	void OnDetonationTimerEnd();
+	virtual void Explode_Implementation() override;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void TeleportInstigator();
 
 	FTimerHandle TravelTimerHandle;
-	FTimerHandle DetonationTimerHandle;
 
 	UPROPERTY(EditAnywhere)
 	float TravelTime;
 
 	UPROPERTY(EditAnywhere)
 	float DetonationTime;
-
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* DetonationParticleSystem;
 };

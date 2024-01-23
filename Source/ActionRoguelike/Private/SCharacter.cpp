@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SCharacter.h"
-
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 #include "Camera/CameraComponent.h"
@@ -55,8 +54,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("DashAttack", IE_Pressed, this, &ASCharacter::DashAttack);
+	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -77,15 +78,50 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
+void ASCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();
+	}
+}
+
 void ASCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnimation);
-	GetWorldTimerManager().SetTimer(PrimaryAttackTimerHandle, this, &ASCharacter::OnPrimaryAttackReady, 0.17f);
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ASCharacter::OnPrimaryAttackReady, 0.17f);
 }
 
 void ASCharacter::OnPrimaryAttackReady()
 {
-	if (!ensure(ProjectileClass))
+	SpawnProjectile(MagicProjectileClass);
+}
+
+void ASCharacter::DashAttack()
+{
+	PlayAnimMontage(AttackAnimation);
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ASCharacter::OnDashAttackReady, 0.17f);
+}
+
+void ASCharacter::OnDashAttackReady()
+{
+	SpawnProjectile(DashProjectileClass);
+}
+
+void ASCharacter::BlackHoleAttack()
+{
+	PlayAnimMontage(AttackAnimation);
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ASCharacter::OnBlackHoleAttackReady, 0.17f);
+}
+
+void ASCharacter::OnBlackHoleAttackReady()
+{
+	SpawnProjectile(BlackHoleProjectileClass);
+}
+
+void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClass)
+{
+	if (!ensureAlways(ProjectileClass))
 	{
 		return;
 	}
@@ -95,17 +131,22 @@ void ASCharacter::OnPrimaryAttackReady()
 	FVector TraceStartLocation = CameraComp->GetComponentLocation();
 	FVector TraceEndLocation = TraceStartLocation + CameraComp->GetForwardVector() * 10000;
 
-	FCollisionObjectQueryParams QueryParams;
-	QueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
 	FHitResult HitResult;
+	if (GetWorld()->LineTraceSingleByObjectType(HitResult, TraceStartLocation, TraceEndLocation, ObjectQueryParams, QueryParams))
+	{
+		TraceEndLocation = HitResult.Location;	
+	}
 
-	bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, TraceStartLocation, TraceEndLocation, QueryParams);
-	FVector TargetLocation = bHit ? HitResult.Location : TraceEndLocation;
-
-	FRotator ProjectileRotation = (TargetLocation - HandLocation).Rotation();
+	FRotator ProjectileRotation = (TraceEndLocation - HandLocation).Rotation();
 	
 	const FTransform SpawnTransform = FTransform(ProjectileRotation, HandLocation);
 
@@ -114,12 +155,4 @@ void ASCharacter::OnPrimaryAttackReady()
 	SpawnParameters.Instigator = this;
 	
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParameters);
-}
-
-void ASCharacter::PrimaryInteract()
-{
-	if (InteractionComp)
-	{
-		InteractionComp->PrimaryInteract();
-	}
 }
