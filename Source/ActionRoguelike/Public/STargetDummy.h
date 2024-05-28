@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "STargetDummy.generated.h"
 
+class AActor;
+class UStaticMeshComponent;
 class USAttributeComponent;
 
 UCLASS()
